@@ -1,0 +1,1021 @@
+
+
+<!DOCTYPE html>
+
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="theme-color" content="#101827">
+
+<title>حسابداری شخصی | KAMRAN - DAVIN</title>
+
+<style>
+
+:root {
+
+  --bg:#101827;--panel:#1b2638;--text:#f4f7fb;
+
+  --muted:#9eacc0;--green:#25c58b;--red:#ff626e;
+
+  --blue:#688cff;--border:#303e52;
+
+}
+
+*{box-sizing:border-box}
+
+body{
+
+  margin:0;background:var(--bg);color:var(--text);
+
+  font-family:Tahoma,Arial,sans-serif;padding:20px 14px 30px
+
+}
+
+.app{max-width:680px;margin:auto}
+
+header{text-align:center;margin:12px 0 25px}
+
+header h1{font-size:25px;margin-bottom:8px}
+
+header p{color:var(--muted);font-size:13px}
+
+.buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+
+button,input,select,textarea{font:inherit}
+
+button{cursor:pointer}
+
+.main-btn{
+
+  border:0;border-radius:15px;padding:17px 4px;
+
+  font-weight:bold;color:white;font-size:15px
+
+}
+
+.pay{background:#c83e4b}
+
+.receive{background:#139b70}
+
+.balance-btn{background:#4969d5}
+
+button:active{transform:scale(.98)}
+
+.card{
+
+  background:var(--panel);border:1px solid var(--border);
+
+  border-radius:18px;padding:18px;margin-top:17px
+
+}
+
+.label{color:var(--muted);font-size:13px}
+
+.amount{font-size:28px;font-weight:bold;margin-top:10px;overflow-wrap:anywhere}
+
+.balance-caption{font-size:13px;color:var(--muted);margin-top:8px}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+
+.stat{background:#10182788;padding:14px;border-radius:13px;min-width:0}
+
+.stat .number{font-size:16px;font-weight:bold;margin-top:9px;overflow-wrap:anywhere}
+
+.green{color:var(--green)}
+
+.red{color:var(--red)}
+
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+
+.section-head h2{font-size:17px;margin:0}
+
+.small-btn{
+
+  border:1px solid var(--border);border-radius:10px;
+
+  padding:8px 10px;background:#26354b;color:white;font-size:12px
+
+}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+
+.filter{
+
+  padding:8px 12px;border:1px solid var(--border);
+
+  background:transparent;color:var(--muted);border-radius:20px;font-size:12px
+
+}
+
+.filter.active{background:#30476a;color:white;border-color:#5879ad}
+
+.item{
+
+  padding:14px 0;border-bottom:1px solid var(--border);
+
+  display:flex;justify-content:space-between;gap:12px;align-items:flex-start
+
+}
+
+.item:last-child{border-bottom:0}
+
+.item-title{font-size:14px;font-weight:bold;overflow-wrap:anywhere}
+
+.item-date{font-size:11px;color:var(--muted);margin-top:8px}
+
+.item-note{font-size:12px;color:#bac5d5;margin-top:7px;overflow-wrap:anywhere}
+
+.item-right{text-align:left;min-width:95px}
+
+.item-amount{font-weight:bold;font-size:13px;direction:rtl;overflow-wrap:anywhere}
+
+.item-actions{display:flex;gap:5px;margin-top:10px;justify-content:flex-end}
+
+.action{
+
+  border:1px solid var(--border);background:transparent;color:var(--muted);
+
+  padding:5px 8px;border-radius:7px;font-size:11px
+
+}
+
+.empty{text-align:center;color:var(--muted);padding:28px 8px;font-size:13px}
+
+.modal{
+
+  position:fixed;inset:0;background:#000b;z-index:5;
+
+  display:none;align-items:center;justify-content:center;padding:15px;overflow:auto
+
+}
+
+.modal.show{display:flex}
+
+.dialog{
+
+  width:100%;max-width:460px;background:var(--panel);
+
+  border:1px solid var(--border);border-radius:20px;padding:22px;margin:auto
+
+}
+
+.dialog h2{font-size:19px;margin:0 0 20px}
+
+.field{margin:15px 0}
+
+.field label{display:block;font-size:13px;margin-bottom:9px;color:#d6deea}
+
+input,select,textarea{
+
+  width:100%;padding:13px;border-radius:11px;border:1px solid var(--border);
+
+  background:#101827;color:white;outline:none;min-width:0
+
+}
+
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+
+textarea{resize:vertical;min-height:85px}
+
+.date-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+
+.date-grid select{padding:12px 5px;font-size:12px}
+
+.form-buttons{display:flex;gap:10px;margin-top:22px}
+
+.form-buttons button{flex:1;border:0;border-radius:11px;padding:13px;font-weight:bold}
+
+.save{background:var(--green);color:#071c15}
+
+.cancel{background:#334155;color:white}
+
+.notice{font-size:11px;color:var(--muted);line-height:2;margin-top:13px}
+
+.footer{
+
+  margin:28px auto 0;padding:23px 12px;text-align:center;
+
+  border-top:1px solid var(--border);color:var(--muted);line-height:2
+
+}
+
+.footer .credit{font-size:12px}
+
+.footer .brand{
+
+  direction:ltr;font-size:19px;font-weight:bold;letter-spacing:1.5px;
+
+  color:#fff;margin:5px 0
+
+}
+
+.footer .phone{direction:ltr;font-size:13px;color:var(--green)}
+
+@media(max-width:380px){
+
+  body{padding:12px 9px}
+
+  .main-btn{font-size:12px;padding:15px 2px}
+
+  .amount{font-size:23px}
+
+  .item-right{min-width:85px}
+
+  .item-amount{font-size:11px}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+
+    <h1>حسابداری شخصی</h1>
+
+    <p id="today"></p>
+
+  </header>
+
+  <div class="buttons">
+
+    <button class="main-btn pay" onclick="openForm('pay')">− پرداخت</button>
+
+    <button class="main-btn receive" onclick="openForm('receive')">+ دریافت</button>
+
+    <button class="main-btn balance-btn" onclick="showBalance()">موجودی</button>
+
+  </div>
+
+  <section class="card" id="balance">
+
+    <div class="label">موجودی فعلی شما</div>
+
+    <div class="amount" id="net">۰ تومان</div>
+
+    <div class="balance-caption">مجموع دریافت‌ها منهای مجموع پرداخت‌ها</div>
+
+    <div class="stats">
+
+      <div class="stat">
+
+        <div class="label">مجموع دریافت‌ها</div>
+
+        <div class="number green" id="income">۰ تومان</div>
+
+      </div>
+
+      <div class="stat">
+
+        <div class="label">مجموع پرداخت‌ها</div>
+
+        <div class="number red" id="expenses">۰ تومان</div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="card" id="transactions">
+
+    <div class="section-head">
+
+      <h2>تراکنش‌ها</h2>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+
+        <button class="small-btn" onclick="exportData()">پشتیبان‌گیری</button>
+
+        <button class="small-btn" onclick="importData()">بازیابی</button>
+
+      </div>
+
+    </div>
+
+    <div class="filters">
+
+      <button class="filter active" data-filter="all" onclick="setFilter('all')">همه</button>
+
+      <button class="filter" data-filter="pay" onclick="setFilter('pay')">پرداخت‌ها</button>
+
+      <button class="filter" data-filter="receive" onclick="setFilter('receive')">دریافت‌ها</button>
+
+    </div>
+
+    <div id="list"></div>
+
+  </section>
+
+  <p class="notice">
+
+    اطلاعات در حافظه همین مرورگر ذخیره می‌شود. برای جلوگیری از ازدست‌رفتن
+
+    اطلاعات، مرتب فایل پشتیبان بگیر.
+
+  </p>
+
+  <footer class="footer">
+
+    <div class="credit">طراحی و ساخته شده توسط</div>
+
+    <div class="brand">KAMRAN - DAVIN</div>
+
+    <div class="phone">TEL : +989121759942</div>
+
+  </footer>
+
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+
+  <div class="dialog">
+
+    <h2 id="formTitle">ثبت تراکنش</h2>
+
+    <form id="entryForm">
+
+      <div class="field">
+
+        <label for="amount">مبلغ (تومان)</label>
+
+        <input id="amount" type="text" inputmode="numeric"
+
+               placeholder="مثلاً ۵۰۰۰۰۰۰" required>
+
+      </div>
+
+      <div class="field">
+
+        <label>تاریخ شمسی</label>
+
+        <div class="date-grid">
+
+          <select id="year" aria-label="سال"></select>
+
+          <select id="month" aria-label="ماه"></select>
+
+          <select id="day" aria-label="روز"></select>
+
+        </div>
+
+      </div>
+
+      <div class="field">
+
+        <label for="description">توضیحات / بابت چه چیزی؟</label>
+
+        <textarea id="description" maxlength="300"
+
+          placeholder="مثلاً خرید منزل، فروش کالا، حقوق..." required></textarea>
+
+      </div>
+
+      <div class="form-buttons">
+
+        <button class="save" type="submit">ذخیره تراکنش</button>
+
+        <button class="cancel" type="button" onclick="closeForm()">انصراف</button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+
+<script>
+
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+const STORAGE_KEY = "personal_accounting_kamran_davin_v2";
+
+const months = [
+
+  "فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور",
+
+  "مهر","آبان","آذر","دی","بهمن","اسفند"
+
+];
+
+const faNumber = n => Number(n).toLocaleString("fa-IR");
+
+const money = n => faNumber(n) + " تومان";
+
+function englishDigits(value) {
+
+  return String(value)
+
+    .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+
+    .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+
+    .replace(/[,٬،\s]/g, "");
+
+}
+
+function persianParts(date) {
+
+  const parts = new Intl.DateTimeFormat(
+
+    "en-US-u-ca-persian-nu-latn",
+
+    {year:"numeric",month:"numeric",day:"numeric",timeZone:"UTC"}
+
+  ).formatToParts(date);
+
+  const get = key => Number(parts.find(p => p.type === key).value);
+
+  return {y:get("year"),m:get("month"),d:get("day")};
+
+}
+
+function todayJalali() {
+
+  const now = new Date();
+
+  return persianParts(new Date(Date.UTC(
+
+    now.getFullYear(),now.getMonth(),now.getDate(),12
+
+  )));
+
+}
+
+function dateText(date) {
+
+  return `${faNumber(date.y)}/${String(date.m).padStart(2,"0")}/${String(date.d).padStart(2,"0")}`
+
+    .replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+
+}
+
+function dateKey(date) {
+
+  return `${date.y}-${String(date.m).padStart(2,"0")}-${String(date.d).padStart(2,"0")}`;
+
+}
+
+function dateFromKey(key) {
+
+  const [y,m,d] = key.split("-").map(Number);
+
+  return {y,m,d};
+
+}
+
+function validJalaliDate(y,m,d) {
+
+  if (!Number.isInteger(y) || !Number.isInteger(m) ||
+
+      !Number.isInteger(d) || y < 1200 || y > 1600 ||
+
+      m < 1 || m > 12 || d < 1 || d > 31) return false;
+
+  // Search the Gregorian equivalent to validate the exact Persian date.
+
+  const start = Date.UTC(y + 621, 1, 15, 12);
+
+  for (let i=0;i<90;i++) {
+
+    const p = persianParts(new Date(start + i*86400000));
+
+    if (p.y===y && p.m===m && p.d===d) return true;
+
+  }
+
+  return false;
+
+}
+
+function loadData() {
+
+  try {
+
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+    if (!Array.isArray(data)) return [];
+
+    return data.filter(x =>
+
+      x && typeof x.id==="string" &&
+
+      ["pay","receive"].includes(x.type) &&
+
+      Number.isSafeInteger(x.amount) && x.amount>0 &&
+
+      typeof x.date==="string" && /^\d{4}-\d{2}-\d{2}$/.test(x.date) &&
+
+      typeof x.description==="string" &&
+
+      validJalaliDate(...x.date.split("-").map(Number))
+
+    );
+
+  } catch { return []; }
+
+}
+
+let transactions = loadData();
+
+let filter = "all";
+
+let editingId = null;
+
+let formType = "pay";
+
+function persist() {
+
+  try {
+
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(transactions));
+
+    return true;
+
+  } catch {
+
+    alert("ذخیره انجام نشد. فضای مرورگر را بررسی کن و از اطلاعات پشتیبان بگیر.");
+
+    return false;
+
+  }
+
+}
+
+function updateToday() {
+
+  $("today").textContent = "امروز " + dateText(todayJalali());
+
+}
+
+function render() {
+
+  const income = transactions.filter(x=>x.type==="receive")
+
+    .reduce((s,x)=>s+x.amount,0);
+
+  const expenses = transactions.filter(x=>x.type==="pay")
+
+    .reduce((s,x)=>s+x.amount,0);
+
+  const net = income-expenses;
+
+  $("income").textContent = money(income);
+
+  $("expenses").textContent = money(expenses);
+
+  $("net").textContent = money(net);
+
+  $("net").className = "amount " + (net<0?"red":"green");
+
+  const list = $("list");
+
+  list.replaceChildren();
+
+  const rows = transactions
+
+    .filter(x=>filter==="all"||x.type===filter)
+
+    .slice().sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+
+  if (!rows.length) {
+
+    const empty = document.createElement("div");
+
+    empty.className = "empty";
+
+    empty.textContent = "هنوز تراکنشی ثبت نشده است.";
+
+    list.appendChild(empty);
+
+    return;
+
+  }
+
+  for (const x of rows) {
+
+    const item = document.createElement("div");
+
+    item.className = "item";
+
+    const left = document.createElement("div");
+
+    const title = document.createElement("div");
+
+    title.className = "item-title "+(x.type==="pay"?"red":"green");
+
+    title.textContent = x.type==="pay"?"پرداخت":"دریافت";
+
+    const date = document.createElement("div");
+
+    date.className = "item-date";
+
+    date.textContent = dateText(dateFromKey(x.date));
+
+    const desc = document.createElement("div");
+
+    desc.className = "item-note";
+
+    desc.textContent = x.description;
+
+    left.append(title,date,desc);
+
+    const right = document.createElement("div");
+
+    right.className = "item-right";
+
+    const amt = document.createElement("div");
+
+    amt.className = "item-amount "+(x.type==="pay"?"red":"green");
+
+    amt.textContent = (x.type==="pay"?"− ":"+ ")+money(x.amount);
+
+    const actions = document.createElement("div");
+
+    actions.className = "item-actions";
+
+    const edit = document.createElement("button");
+
+    edit.className = "action";
+
+    edit.textContent = "ویرایش";
+
+    edit.onclick = ()=>editTransaction(x.id);
+
+    const del = document.createElement("button");
+
+    del.className = "action";
+
+    del.textContent = "حذف";
+
+    del.onclick = ()=>deleteTransaction(x.id);
+
+    actions.append(edit,del);
+
+    right.append(amt,actions);
+
+    item.append(left,right);
+
+    list.appendChild(item);
+
+  }
+
+}
+
+function showBalance() {
+
+  $("balance").scrollIntoView({behavior:"smooth",block:"start"});
+
+}
+
+function setFilter(value) {
+
+  filter = value;
+
+  document.querySelectorAll(".filter").forEach(btn=>{
+
+    btn.classList.toggle("active",btn.dataset.filter===value);
+
+  });
+
+  render();
+
+}
+
+function setupDatePicker(initial) {
+
+  const y=$("year"),m=$("month"),d=$("day");
+
+  y.replaceChildren();
+
+  m.replaceChildren();
+
+  d.replaceChildren();
+
+  const current=todayJalali();
+
+  const selected=initial||current;
+
+  for(let year=Math.min(1405,current.y)-10;
+
+      year<=Math.max(1405,current.y)+15;year++){
+
+    const opt=document.createElement("option");
+
+    opt.value=year;
+
+    opt.textContent=faNumber(year);
+
+    y.appendChild(opt);
+
+  }
+
+  months.forEach((name,i)=>{
+
+    const opt=document.createElement("option");
+
+    opt.value=i+1;
+
+    opt.textContent=name;
+
+    m.appendChild(opt);
+
+  });
+
+  y.value=selected.y;
+
+  m.value=selected.m;
+
+  fillDays(selected.d);
+
+  y.onchange=()=>fillDays(Number(d.value));
+
+  m.onchange=()=>fillDays(Number(d.value));
+
+}
+
+function fillDays(preferredDay) {
+
+  const y=Number($("year").value);
+
+  const m=Number($("month").value);
+
+  const d=$("day");
+
+  let count=29;
+
+  for(let day=30;day<=31;day++){
+
+    if(validJalaliDate(y,m,day)) count=day;
+
+  }
+
+  d.replaceChildren();
+
+  for(let day=1;day<=count;day++){
+
+    const opt=document.createElement("option");
+
+    opt.value=day;
+
+    opt.textContent=faNumber(day);
+
+    d.appendChild(opt);
+
+  }
+
+  d.value=Math.min(preferredDay||1,count);
+
+}
+
+function openForm(type,record=null) {
+
+  formType=type;
+
+  editingId=record?record.id:null;
+
+  $("formTitle").textContent=record?"ویرایش تراکنش":
+
+    type==="pay"?"ثبت پرداخت":"ثبت دریافت";
+
+  $("amount").value=record?String(record.amount):"";
+
+  $("description").value=record?record.description:"";
+
+  setupDatePicker(record?dateFromKey(record.date):todayJalali());
+
+  $("modal").classList.add("show");
+
+  setTimeout(()=>$("amount").focus(),50);
+
+}
+
+function closeForm() {
+
+  $("modal").classList.remove("show");
+
+  editingId=null;
+
+}
+
+function editTransaction(id) {
+
+  const record=transactions.find(x=>x.id===id);
+
+  if(record) openForm(record.type,record);
+
+}
+
+function deleteTransaction(id) {
+
+  if(!confirm("این تراکنش حذف شود؟")) return;
+
+  const old=transactions;
+
+  transactions=transactions.filter(x=>x.id!==id);
+
+  if(!persist()){transactions=old;return;}
+
+  render();
+
+}
+
+$("entryForm").addEventListener("submit",event=>{
+
+  event.preventDefault();
+
+  const raw=englishDigits($("amount").value);
+
+  if(!/^\d+$/.test(raw)){
+
+    alert("مبلغ را به‌صورت عدد صحیح و به تومان وارد کن.");
+
+    return;
+
+  }
+
+  const amount=Number(raw);
+
+  if(!Number.isSafeInteger(amount)||amount<=0){
+
+    alert("مبلغ واردشده معتبر نیست.");
+
+    return;
+
+  }
+
+  const description=$("description").value.trim();
+
+  if(!description){
+
+    alert("لطفاً توضیحات تراکنش را وارد کن.");
+
+    return;
+
+  }
+
+  const date={
+
+    y:Number($("year").value),
+
+    m:Number($("month").value),
+
+    d:Number($("day").value)
+
+  };
+
+  if(!validJalaliDate(date.y,date.m,date.d)){
+
+    alert("تاریخ انتخاب‌شده معتبر نیست.");
+
+    return;
+
+  }
+
+  const old=transactions;
+
+  const record={
+
+    id:editingId||(Date.now().toString(36)+Math.random().toString(36).slice(2,8)),
+
+    type:formType,amount,date:dateKey(date),description
+
+  };
+
+  if(editingId){
+
+    transactions=transactions.map(x=>x.id===editingId?record:x);
+
+  }else{
+
+    transactions.push(record);
+
+  }
+
+  if(!persist()){transactions=old;return;}
+
+  closeForm();
+
+  render();
+
+});
+
+function exportData() {
+
+  const data={
+
+    app:"personal-accounting-kamran-davin",
+
+    version:2,
+
+    exportedAt:new Date().toISOString(),
+
+    transactions
+
+  };
+
+  const blob=new Blob([JSON.stringify(data,null,2)],
+
+    {type:"application/json;charset=utf-8"});
+
+  const url=URL.createObjectURL(blob);
+
+  const a=document.createElement("a");
+
+  a.href=url;
+
+  a.download="kamran-davin-accounting-backup.json";
+
+  a.click();
+
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+
+}
+
+function importData() {
+
+  $("importFile").click();
+
+}
+
+$("importFile").addEventListener("change",async event=>{
+
+  const file=event.target.files[0];
+
+  if(!file)return;
+
+  try{
+
+    const data=JSON.parse(await file.text());
+
+    const rows=Array.isArray(data)?data:data.transactions;
+
+    if(!Array.isArray(rows)||!rows.every(x=>
+
+      x&&typeof x.id==="string"&&
+
+      ["pay","receive"].includes(x.type)&&
+
+      Number.isSafeInteger(x.amount)&&x.amount>0&&
+
+      typeof x.date==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&
+
+      validJalaliDate(...x.date.split("-").map(Number))&&
+
+      typeof x.description==="string"
+
+    ))throw new Error("invalid");
+
+    if(!confirm("اطلاعات پشتیبان جایگزین تمام تراکنش‌های فعلی شود؟"))return;
+
+    const old=transactions;
+
+    transactions=rows;
+
+    if(!persist()){transactions=old;return;}
+
+    render();
+
+    alert("اطلاعات پشتیبان بازیابی شد.");
+
+  }catch{
+
+    alert("فایل پشتیبان معتبر نیست.");
+
+  }finally{
+
+    event.target.value="";
+
+  }
+
+});
+
+$("modal").addEventListener("click",event=>{
+
+  if(event.target===$("modal"))closeForm();
+
+});
+
+updateToday();
+
+render();
+
+</script>
+
+</body>
+
+</html>
