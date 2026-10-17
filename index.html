@@ -16,13 +16,13 @@
 
 <style>
 
-:root {
+:root{
 
   --bg:#101827;--panel:#1b2638;--text:#f4f7fb;
 
   --muted:#9eacc0;--green:#25c58b;--red:#ff626e;
 
-  --blue:#688cff;--border:#303e52;
+  --blue:#688cff;--border:#303e52
 
 }
 
@@ -44,11 +44,13 @@ header h1{font-size:25px;margin-bottom:8px}
 
 header p{color:var(--muted);font-size:13px}
 
-.buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-
 button,input,select,textarea{font:inherit}
 
 button{cursor:pointer}
+
+button:active{transform:scale(.98)}
+
+.buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 
 .main-btn{
 
@@ -64,8 +66,6 @@ button{cursor:pointer}
 
 .balance-btn{background:#4969d5}
 
-button:active{transform:scale(.98)}
-
 .card{
 
   background:var(--panel);border:1px solid var(--border);
@@ -76,7 +76,7 @@ button:active{transform:scale(.98)}
 
 .label{color:var(--muted);font-size:13px}
 
-.amount{font-size:28px;font-weight:bold;margin-top:10px;overflow-wrap:anywhere}
+.amount{font-size:27px;font-weight:bold;margin-top:10px;overflow-wrap:anywhere}
 
 .balance-caption{font-size:13px;color:var(--muted);margin-top:8px}
 
@@ -150,7 +150,9 @@ button:active{transform:scale(.98)}
 
   position:fixed;inset:0;background:#000b;z-index:5;
 
-  display:none;align-items:center;justify-content:center;padding:15px;overflow:auto
+  display:none;align-items:center;justify-content:center;
+
+  padding:15px;overflow:auto
 
 }
 
@@ -172,9 +174,11 @@ button:active{transform:scale(.98)}
 
 input,select,textarea{
 
-  width:100%;padding:13px;border-radius:11px;border:1px solid var(--border);
+  width:100%;padding:13px;border-radius:11px;
 
-  background:#101827;color:white;outline:none;min-width:0
+  border:1px solid var(--border);background:#101827;color:white;
+
+  outline:none;min-width:0
 
 }
 
@@ -222,9 +226,9 @@ textarea{resize:vertical;min-height:85px}
 
   .main-btn{font-size:12px;padding:15px 2px}
 
-  .amount{font-size:23px}
+  .amount{font-size:22px}
 
-  .item-right{min-width:85px}
+  .item-right{min-width:80px}
 
   .item-amount{font-size:11px}
 
@@ -350,7 +354,7 @@ textarea{resize:vertical;min-height:85px}
 
         <input id="amount" type="text" inputmode="numeric"
 
-               placeholder="مثلاً ۵۰۰۰۰۰۰" required>
+          autocomplete="off" placeholder="مثلاً ۵,۰۰۰,۰۰۰" required>
 
       </div>
 
@@ -412,9 +416,27 @@ const months = [
 
 ];
 
-const faNumber = n => Number(n).toLocaleString("fa-IR");
+// اعداد فارسی بدون جداکننده هزارگان؛ مخصوص سال و تاریخ
 
-const money = n => faNumber(n) + " تومان";
+function faDigits(value) {
+
+  return String(value).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[Number(d)]);
+
+}
+
+// اعداد فارسی با جداکننده هزارگان؛ مخصوص مبلغ
+
+function faNumber(value) {
+
+  return faDigits(Number(value).toLocaleString("en-US"));
+
+}
+
+function money(value) {
+
+  return faNumber(value) + " تومان";
+
+}
 
 function englishDigits(value) {
 
@@ -424,7 +446,7 @@ function englishDigits(value) {
 
     .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
 
-    .replace(/[,٬،\s]/g, "");
+    .replace(/[,\u066C٬\u060C\s]/g, "");
 
 }
 
@@ -434,7 +456,13 @@ function persianParts(date) {
 
     "en-US-u-ca-persian-nu-latn",
 
-    {year:"numeric",month:"numeric",day:"numeric",timeZone:"UTC"}
+    {
+
+      year:"numeric",month:"numeric",day:"numeric",
+
+      timeZone:"UTC"
+
+    }
 
   ).formatToParts(date);
 
@@ -458,15 +486,21 @@ function todayJalali() {
 
 function dateText(date) {
 
-  return `${faNumber(date.y)}/${String(date.m).padStart(2,"0")}/${String(date.d).padStart(2,"0")}`
+  return faDigits(date.y) + "/" +
 
-    .replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+    faDigits(String(date.m).padStart(2,"0")) + "/" +
+
+    faDigits(String(date.d).padStart(2,"0"));
 
 }
 
 function dateKey(date) {
 
-  return `${date.y}-${String(date.m).padStart(2,"0")}-${String(date.d).padStart(2,"0")}`;
+  return String(date.y) + "-" +
+
+    String(date.m).padStart(2,"0") + "-" +
+
+    String(date.d).padStart(2,"0");
 
 }
 
@@ -478,27 +512,51 @@ function dateFromKey(key) {
 
 }
 
-function validJalaliDate(y,m,d) {
+/*
+
+  اعتبارسنجی تاریخ با تطبیق دقیق تقویم فارسی مرورگر.
+
+  دیگر از محاسبه تقریبی سال کبیسه استفاده نمی‌کنیم.
+
+*/
+
+function findGregorianDate(y,m,d) {
 
   if (!Number.isInteger(y) || !Number.isInteger(m) ||
 
       !Number.isInteger(d) || y < 1200 || y > 1600 ||
 
-      m < 1 || m > 12 || d < 1 || d > 31) return false;
+      m < 1 || m > 12 || d < 1 || d > 31) return null;
 
-  // Search the Gregorian equivalent to validate the exact Persian date.
+  // ابتدای تقریبی ماه شمسی در تقویم میلادی
 
-  const start = Date.UTC(y + 621, 1, 15, 12);
+  const start = m <= 6
 
-  for (let i=0;i<90;i++) {
+    ? Date.UTC(y + 621, 2, 15, 12) + (m - 1) * 31 * 86400000
 
-    const p = persianParts(new Date(start + i*86400000));
+    : Date.UTC(y + 621, 8, 15, 12) + (m - 7) * 30 * 86400000;
 
-    if (p.y===y && p.m===m && p.d===d) return true;
+  for (let i = 0; i < 40; i++) {
+
+    const candidate = new Date(start + i * 86400000);
+
+    const p = persianParts(candidate);
+
+    if (p.y === y && p.m === m && p.d === d) {
+
+      return candidate;
+
+    }
 
   }
 
-  return false;
+  return null;
+
+}
+
+function validJalaliDate(y,m,d) {
+
+  return findGregorianDate(y,m,d) !== null;
 
 }
 
@@ -512,21 +570,27 @@ function loadData() {
 
     return data.filter(x =>
 
-      x && typeof x.id==="string" &&
+      x && typeof x.id === "string" &&
 
       ["pay","receive"].includes(x.type) &&
 
-      Number.isSafeInteger(x.amount) && x.amount>0 &&
+      Number.isSafeInteger(x.amount) && x.amount > 0 &&
 
-      typeof x.date==="string" && /^\d{4}-\d{2}-\d{2}$/.test(x.date) &&
+      typeof x.date === "string" &&
 
-      typeof x.description==="string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(x.date) &&
+
+      typeof x.description === "string" &&
 
       validJalaliDate(...x.date.split("-").map(Number))
 
     );
 
-  } catch { return []; }
+  } catch {
+
+    return [];
+
+  }
 
 }
 
@@ -564,15 +628,19 @@ function updateToday() {
 
 function render() {
 
-  const income = transactions.filter(x=>x.type==="receive")
+  const income = transactions
 
-    .reduce((s,x)=>s+x.amount,0);
+    .filter(x => x.type === "receive")
 
-  const expenses = transactions.filter(x=>x.type==="pay")
+    .reduce((s,x) => s + x.amount,0);
 
-    .reduce((s,x)=>s+x.amount,0);
+  const expenses = transactions
 
-  const net = income-expenses;
+    .filter(x => x.type === "pay")
+
+    .reduce((s,x) => s + x.amount,0);
+
+  const net = income - expenses;
 
   $("income").textContent = money(income);
 
@@ -580,7 +648,7 @@ function render() {
 
   $("net").textContent = money(net);
 
-  $("net").className = "amount " + (net<0?"red":"green");
+  $("net").className = "amount " + (net < 0 ? "red" : "green");
 
   const list = $("list");
 
@@ -588,9 +656,15 @@ function render() {
 
   const rows = transactions
 
-    .filter(x=>filter==="all"||x.type===filter)
+    .filter(x => filter === "all" || x.type === filter)
 
-    .slice().sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+    .slice()
+
+    .sort((a,b) =>
+
+      b.date.localeCompare(a.date) || b.id.localeCompare(a.id)
+
+    );
 
   if (!rows.length) {
 
@@ -616,9 +690,9 @@ function render() {
 
     const title = document.createElement("div");
 
-    title.className = "item-title "+(x.type==="pay"?"red":"green");
+    title.className = "item-title " + (x.type === "pay" ? "red" : "green");
 
-    title.textContent = x.type==="pay"?"پرداخت":"دریافت";
+    title.textContent = x.type === "pay" ? "پرداخت" : "دریافت";
 
     const date = document.createElement("div");
 
@@ -640,9 +714,9 @@ function render() {
 
     const amt = document.createElement("div");
 
-    amt.className = "item-amount "+(x.type==="pay"?"red":"green");
+    amt.className = "item-amount " + (x.type === "pay" ? "red" : "green");
 
-    amt.textContent = (x.type==="pay"?"− ":"+ ")+money(x.amount);
+    amt.textContent = (x.type === "pay" ? "− " : "+ ") + money(x.amount);
 
     const actions = document.createElement("div");
 
@@ -654,7 +728,7 @@ function render() {
 
     edit.textContent = "ویرایش";
 
-    edit.onclick = ()=>editTransaction(x.id);
+    edit.onclick = () => editTransaction(x.id);
 
     const del = document.createElement("button");
 
@@ -662,7 +736,7 @@ function render() {
 
     del.textContent = "حذف";
 
-    del.onclick = ()=>deleteTransaction(x.id);
+    del.onclick = () => deleteTransaction(x.id);
 
     actions.append(edit,del);
 
@@ -686,9 +760,9 @@ function setFilter(value) {
 
   filter = value;
 
-  document.querySelectorAll(".filter").forEach(btn=>{
+  document.querySelectorAll(".filter").forEach(btn => {
 
-    btn.classList.toggle("active",btn.dataset.filter===value);
+    btn.classList.toggle("active",btn.dataset.filter === value);
 
   });
 
@@ -698,7 +772,11 @@ function setFilter(value) {
 
 function setupDatePicker(initial) {
 
-  const y=$("year"),m=$("month"),d=$("day");
+  const y = $("year");
+
+  const m = $("month");
+
+  const d = $("day");
 
   y.replaceChildren();
 
@@ -706,101 +784,103 @@ function setupDatePicker(initial) {
 
   d.replaceChildren();
 
-  const current=todayJalali();
+  const current = todayJalali();
 
-  const selected=initial||current;
+  const selected = initial || current;
 
-  for(let year=Math.min(1405,current.y)-10;
+  for (let year = Math.min(1405,current.y) - 10;
 
-      year<=Math.max(1405,current.y)+15;year++){
+       year <= Math.max(1405,current.y) + 15; year++) {
 
-    const opt=document.createElement("option");
+    const option = document.createElement("option");
 
-    opt.value=year;
+    option.value = year;
 
-    opt.textContent=faNumber(year);
+    option.textContent = faDigits(year); // بدون جداکننده هزارگان
 
-    y.appendChild(opt);
+    y.appendChild(option);
 
   }
 
-  months.forEach((name,i)=>{
+  months.forEach((name,i) => {
 
-    const opt=document.createElement("option");
+    const option = document.createElement("option");
 
-    opt.value=i+1;
+    option.value = i + 1;
 
-    opt.textContent=name;
+    option.textContent = name;
 
-    m.appendChild(opt);
+    m.appendChild(option);
 
   });
 
-  y.value=selected.y;
+  y.value = selected.y;
 
-  m.value=selected.m;
+  m.value = selected.m;
 
   fillDays(selected.d);
 
-  y.onchange=()=>fillDays(Number(d.value));
+  y.onchange = () => fillDays(Number(d.value));
 
-  m.onchange=()=>fillDays(Number(d.value));
+  m.onchange = () => fillDays(Number(d.value));
 
 }
 
 function fillDays(preferredDay) {
 
-  const y=Number($("year").value);
+  const y = Number($("year").value);
 
-  const m=Number($("month").value);
+  const m = Number($("month").value);
 
-  const d=$("day");
+  const d = $("day");
 
-  let count=29;
+  let count = 0;
 
-  for(let day=30;day<=31;day++){
+  for (let day = 1; day <= 31; day++) {
 
-    if(validJalaliDate(y,m,day)) count=day;
+    if (validJalaliDate(y,m,day)) count = day;
 
   }
 
   d.replaceChildren();
 
-  for(let day=1;day<=count;day++){
+  for (let day = 1; day <= count; day++) {
 
-    const opt=document.createElement("option");
+    const option = document.createElement("option");
 
-    opt.value=day;
+    option.value = day;
 
-    opt.textContent=faNumber(day);
+    option.textContent = faDigits(day);
 
-    d.appendChild(opt);
+    d.appendChild(option);
 
   }
 
-  d.value=Math.min(preferredDay||1,count);
+  d.value = Math.min(preferredDay || 1,count);
 
 }
 
 function openForm(type,record=null) {
 
-  formType=type;
+  formType = type;
 
-  editingId=record?record.id:null;
+  editingId = record ? record.id : null;
 
-  $("formTitle").textContent=record?"ویرایش تراکنش":
+  $("formTitle").textContent = record
 
-    type==="pay"?"ثبت پرداخت":"ثبت دریافت";
+    ? "ویرایش تراکنش"
 
-  $("amount").value=record?String(record.amount):"";
+    : type === "pay" ? "ثبت پرداخت" : "ثبت دریافت";
 
-  $("description").value=record?record.description:"";
+  $("amount").value = record ? faNumber(record.amount) : "";
 
-  setupDatePicker(record?dateFromKey(record.date):todayJalali());
+  $("description").value = record ? record.description : "";
+
+  setupDatePicker(record ? dateFromKey(record.date) : todayJalali());
 
   $("modal").classList.add("show");
 
-  setTimeout(()=>$("amount").focus(),50);
+  setTimeout(() => $("amount").focus(),50);
 
 }
 
@@ -808,39 +888,79 @@ function closeForm() {
 
   $("modal").classList.remove("show");
 
-  editingId=null;
+  editingId = null;
 
 }
 
 function editTransaction(id) {
 
-  const record=transactions.find(x=>x.id===id);
+  const record = transactions.find(x => x.id === id);
 
-  if(record) openForm(record.type,record);
+  if (record) openForm(record.type,record);
 
 }
 
 function deleteTransaction(id) {
 
-  if(!confirm("این تراکنش حذف شود؟")) return;
+  if (!confirm("این تراکنش حذف شود؟")) return;
 
-  const old=transactions;
+  const old = transactions;
 
-  transactions=transactions.filter(x=>x.id!==id);
+  transactions = transactions.filter(x => x.id !== id);
 
-  if(!persist()){transactions=old;return;}
+  if (!persist()) {
+
+    transactions = old;
+
+    return;
+
+  }
 
   render();
 
 }
 
-$("entryForm").addEventListener("submit",event=>{
+/* جداکردن خودکار سه‌رقمی مبلغ هنگام تایپ */
+
+$("amount").addEventListener("input",event => {
+
+  const input = event.target;
+
+  const oldPosition = input.selectionStart ?? input.value.length;
+
+  const before = input.value.slice(0,oldPosition);
+
+  const digitsBefore = englishDigits(before).replace(/\D/g,"").length;
+
+  const digits = englishDigits(input.value).replace(/\D/g,"");
+
+  const formatted = digits ? faNumber(Number(digits)) : "";
+
+  input.value = formatted;
+
+  let position = 0;
+
+  let seen = 0;
+
+  while (position < formatted.length && seen < digitsBefore) {
+
+    if (/[۰-۹]/.test(formatted[position])) seen++;
+
+    position++;
+
+  }
+
+  input.setSelectionRange(position,position);
+
+});
+
+$("entryForm").addEventListener("submit",event => {
 
   event.preventDefault();
 
-  const raw=englishDigits($("amount").value);
+  const raw = englishDigits($("amount").value);
 
-  if(!/^\d+$/.test(raw)){
+  if (!/^\d+$/.test(raw)) {
 
     alert("مبلغ را به‌صورت عدد صحیح و به تومان وارد کن.");
 
@@ -848,9 +968,9 @@ $("entryForm").addEventListener("submit",event=>{
 
   }
 
-  const amount=Number(raw);
+  const amount = Number(raw);
 
-  if(!Number.isSafeInteger(amount)||amount<=0){
+  if (!Number.isSafeInteger(amount) || amount <= 0) {
 
     alert("مبلغ واردشده معتبر نیست.");
 
@@ -858,9 +978,9 @@ $("entryForm").addEventListener("submit",event=>{
 
   }
 
-  const description=$("description").value.trim();
+  const description = $("description").value.trim();
 
-  if(!description){
+  if (!description) {
 
     alert("لطفاً توضیحات تراکنش را وارد کن.");
 
@@ -868,7 +988,7 @@ $("entryForm").addEventListener("submit",event=>{
 
   }
 
-  const date={
+  const date = {
 
     y:Number($("year").value),
 
@@ -878,35 +998,51 @@ $("entryForm").addEventListener("submit",event=>{
 
   };
 
-  if(!validJalaliDate(date.y,date.m,date.d)){
+  if (!validJalaliDate(date.y,date.m,date.d)) {
 
-    alert("تاریخ انتخاب‌شده معتبر نیست.");
+    alert("تاریخ انتخاب‌شده معتبر نیست. تاریخ دیگری انتخاب کن.");
 
     return;
 
   }
 
-  const old=transactions;
+  const old = transactions;
 
-  const record={
+  const record = {
 
-    id:editingId||(Date.now().toString(36)+Math.random().toString(36).slice(2,8)),
+    id:editingId || (
 
-    type:formType,amount,date:dateKey(date),description
+      Date.now().toString(36) + Math.random().toString(36).slice(2,8)
+
+    ),
+
+    type:formType,
+
+    amount,
+
+    date:dateKey(date),
+
+    description
 
   };
 
-  if(editingId){
+  if (editingId) {
 
-    transactions=transactions.map(x=>x.id===editingId?record:x);
+    transactions = transactions.map(x => x.id === editingId ? record : x);
 
-  }else{
+  } else {
 
     transactions.push(record);
 
   }
 
-  if(!persist()){transactions=old;return;}
+  if (!persist()) {
+
+    transactions = old;
+
+    return;
+
+  }
 
   closeForm();
 
@@ -916,7 +1052,7 @@ $("entryForm").addEventListener("submit",event=>{
 
 function exportData() {
 
-  const data={
+  const data = {
 
     app:"personal-accounting-kamran-davin",
 
@@ -928,21 +1064,25 @@ function exportData() {
 
   };
 
-  const blob=new Blob([JSON.stringify(data,null,2)],
+  const blob = new Blob(
 
-    {type:"application/json;charset=utf-8"});
+    [JSON.stringify(data,null,2)],
 
-  const url=URL.createObjectURL(blob);
+    {type:"application/json;charset=utf-8"}
 
-  const a=document.createElement("a");
+  );
 
-  a.href=url;
+  const url = URL.createObjectURL(blob);
 
-  a.download="kamran-davin-accounting-backup.json";
+  const a = document.createElement("a");
+
+  a.href = url;
+
+  a.download = "kamran-davin-accounting-backup.json";
 
   a.click();
 
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  setTimeout(() => URL.revokeObjectURL(url),1000);
 
 }
 
@@ -952,61 +1092,69 @@ function importData() {
 
 }
 
-$("importFile").addEventListener("change",async event=>{
+$("importFile").addEventListener("change",async event => {
 
-  const file=event.target.files[0];
+  const file = event.target.files[0];
 
-  if(!file)return;
+  if (!file) return;
 
-  try{
+  try {
 
-    const data=JSON.parse(await file.text());
+    const data = JSON.parse(await file.text());
 
-    const rows=Array.isArray(data)?data:data.transactions;
+    const rows = Array.isArray(data) ? data : data.transactions;
 
-    if(!Array.isArray(rows)||!rows.every(x=>
+    if (!Array.isArray(rows) || !rows.every(x =>
 
-      x&&typeof x.id==="string"&&
+      x && typeof x.id === "string" &&
 
-      ["pay","receive"].includes(x.type)&&
+      ["pay","receive"].includes(x.type) &&
 
-      Number.isSafeInteger(x.amount)&&x.amount>0&&
+      Number.isSafeInteger(x.amount) && x.amount > 0 &&
 
-      typeof x.date==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&
+      typeof x.date === "string" &&
 
-      validJalaliDate(...x.date.split("-").map(Number))&&
+      /^\d{4}-\d{2}-\d{2}$/.test(x.date) &&
 
-      typeof x.description==="string"
+      validJalaliDate(...x.date.split("-").map(Number)) &&
 
-    ))throw new Error("invalid");
+      typeof x.description === "string"
 
-    if(!confirm("اطلاعات پشتیبان جایگزین تمام تراکنش‌های فعلی شود؟"))return;
+    )) throw new Error("invalid");
 
-    const old=transactions;
+    if (!confirm("اطلاعات پشتیبان جایگزین تمام تراکنش‌های فعلی شود؟")) return;
 
-    transactions=rows;
+    const old = transactions;
 
-    if(!persist()){transactions=old;return;}
+    transactions = rows;
+
+    if (!persist()) {
+
+      transactions = old;
+
+      return;
+
+    }
 
     render();
 
     alert("اطلاعات پشتیبان بازیابی شد.");
 
-  }catch{
+  } catch {
 
     alert("فایل پشتیبان معتبر نیست.");
 
-  }finally{
+  } finally {
 
-    event.target.value="";
+    event.target.value = "";
 
   }
 
 });
 
-$("modal").addEventListener("click",event=>{
+$("modal").addEventListener("click",event => {
 
-  if(event.target===$("modal"))closeForm();
+  if (event.target === $("modal")) closeForm();
 
 });
 
